@@ -1,5 +1,8 @@
 import argparse
 
+from brainx.brainfuck import brainfuck
+
+
 __author__ = 'ivo'
 
 
@@ -12,9 +15,9 @@ def execute(filename):
 
 
 def main():
-    print("hello")
+    brainfuck.interpret(",++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.")
     parser = argparse.ArgumentParser()
-    parser.add_argument("filename")
+    parser.add_argument("filename", nargs="?")
     args = parser.parse_args()
 
     if args.filename is None:
