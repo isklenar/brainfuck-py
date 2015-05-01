@@ -1,9 +1,10 @@
 import sys
 
-import brainxutils
+import brainxlogger
 
 
 __name__ = 'brainfuck'
+
 
 def __parse_loops(program):
     ret = {}
@@ -60,10 +61,10 @@ def interpret(program, memory=None, pointer=0):
 
         if program[i] == "]":
             if memory[pointer] != 0:
-                i = loops[i] - 1 if loops[i] - 1 > 0 else 0
+                i = loops[i] - 1
 
         if program[i] == "#":
-            brainxutils.log(program, memory, pointer, output)
+            brainxlogger.log(program, memory, pointer, output)
 
         i += 1
 

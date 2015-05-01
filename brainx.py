@@ -2,7 +2,8 @@ import argparse
 import sys
 
 from brainx import brainfuck
-from brainx import brainxutils
+from brainx import brainxlogger
+from brainx import brainloller
 
 
 __author__ = 'ivo'
@@ -27,8 +28,13 @@ def is_file(program):
 
 
 def read_program_from_file(filename):
-    with open(filename) as f:
-        return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
+    extension = filename.split(".")[1]
+    if extension == "b":
+        with open(filename) as f:
+            return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
+
+    elif extension == "png":
+        return brainloller.read_png_program(filename)
 
 
 def dispatch(program, memory=None, pointer=0, operation=None, debug=False):
@@ -39,7 +45,7 @@ def dispatch(program, memory=None, pointer=0, operation=None, debug=False):
         output = brainfuck.interpret(program, memory, pointer)
 
     if debug:
-        brainxutils.log(program, memory, pointer, output)
+        brainxlogger.log(program, memory, pointer, output)
 
 
 def load_program(data):
@@ -64,13 +70,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
     parser.add_argument("-t", "--test", action="store_true")
-    parser.add_argument("-m", "--memory", default=b"0")
+    parser.add_argument("-m", "--memory", default=b'\0')
     parser.add_argument("-p", "--memory-pointer", nargs=1, default=0)
     args = parser.parse_args()
 
     program = load_program(args.program)
     memory = parse_memory(args.memory)
-    pointer = int(args.memory_pointer[0])
+    pointer = args.memory_pointer
 
     dispatch(program, memory=memory, pointer=pointer, debug=args.test)
 
