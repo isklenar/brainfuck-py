@@ -2,6 +2,7 @@ import argparse
 import sys
 
 from brainx import brainfuck
+from brainx import brainxutils
 
 
 __author__ = 'ivo'
@@ -30,39 +31,6 @@ def read_program_from_file(filename):
         return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
 
 
-def create_log(program, memory, pointer, output, param):
-    with open("debug\\debug_" + param + ".log", "w+") as f:
-        f.write("# program data\n")
-        f.write(program)
-        f.write("\n\n# memory\n")
-        f.write(str(memory))
-        f.write("\n\n# memory pointer\n")
-        f.write(str(pointer))
-        f.write("\n\n# output\n")
-        f.write(output)
-        f.write("\n")
-
-
-def next_log(num):
-    if num[1] == "9":
-        return chr(ord(num[0]) + 1) + "0"  # inkrementuje se desitkove cislo
-    else:
-        return num[0] + chr(ord(num[1]) + 1)  # desitkove se necha, jednotkove se inkrementuje
-
-
-def log(program, memory, pointer, output):
-    from os import listdir
-    from os.path import isfile, join
-
-    files = [f for f in listdir("debug\\") if isfile(join("debug\\", f))]
-    if len(files) == 0:
-        create_log(program, memory, pointer, output, "00")
-    else:
-        import re
-        last = re.search("\d+", files[len(files) - 1]).group(0)
-        create_log(program, memory, pointer, output, next_log(last))
-
-
 def dispatch(program, memory=None, pointer=0, operation=None, debug=False):
     if not memory:
         memory = [0]
@@ -71,7 +39,7 @@ def dispatch(program, memory=None, pointer=0, operation=None, debug=False):
         output = brainfuck.interpret(program, memory, pointer)
 
     if debug:
-        log(program, memory, pointer, output)
+        brainxutils.log(program, memory, pointer, output)
 
 
 def load_program(data):
@@ -89,22 +57,20 @@ def load_program(data):
 
 
 def parse_memory(memory):
-    if (memory is None):
-        return [0]
-    return list(memory)
+    return [int(x) for x in memory]
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
     parser.add_argument("-t", "--test", action="store_true")
-    parser.add_argument("-m", "--memory", nargs="?", default=None)
-    parser.add_argument("-p", "--pointer", nargs="+", default=0)
+    parser.add_argument("-m", "--memory", default=b"0")
+    parser.add_argument("-p", "--memory-pointer", nargs=1, default=0)
     args = parser.parse_args()
 
     program = load_program(args.program)
     memory = parse_memory(args.memory)
-    pointer = int(args.pointer[0])
+    pointer = int(args.memory_pointer[0])
 
     dispatch(program, memory=memory, pointer=pointer, debug=args.test)
 
