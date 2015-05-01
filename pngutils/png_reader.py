@@ -63,6 +63,28 @@ def __decompress(chunks):
     return zlib.decompress(data)
 
 
+def rgb_data(tmp):
+    r = int.from_bytes(tmp[:1], byteorder="big")
+    g = int.from_bytes(tmp[1:2], byteorder="big")
+    b = int.from_bytes(tmp[2:3], byteorder="big")
+
+    return r, g, b
+
+
+def create_rgb_matrix(image_data, width, height):
+    ret = [[0 for x in range(0, width)] for x in range(0, height)]
+
+    for x in range(height):
+        f = image_data[x * height: x * height + 1]
+        image_data = image_data[1:]
+        for y in range(width):
+            tmp = image_data[:3]
+            image_data = image_data[3:]
+            ret[x][y] = rgb_data(tmp)
+
+    return ret
+
+
 def get_image(filename):
     data = list(__read_png(filename))
 
@@ -70,4 +92,4 @@ def get_image(filename):
     chunks = __read_chunks(data)
     width, height = __check_and_parse_first_chuck(chunks[0])
     image_data = __decompress(chunks)
-    print()
+    return create_rgb_matrix(image_data, width, height)
