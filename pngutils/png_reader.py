@@ -114,6 +114,7 @@ def create_rgb_matrix(image_data, width, height):
     ret = [0 for x in range(0, height * width)]
 
     for x in range(height):
+        print(x)
         f = int.from_bytes(image_data[:1], byteorder="big")
         image_data = image_data[1:]
         for y in range(width):

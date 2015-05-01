@@ -2,8 +2,9 @@ import argparse
 import sys
 
 from brainx import brainfuck
+
 from brainx import brainxlogger
-from brainx import brainloller
+from brainx import braincopter
 
 
 __author__ = 'ivo'
@@ -28,13 +29,14 @@ def is_file(program):
 
 
 def read_program_from_file(filename):
-    extension = filename.split(".")[1]
+    extension = filename.split(".")
+    extension = extension[len(extension) - 1]
     if extension == "b":
         with open(filename) as f:
             return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
 
     elif extension == "png":
-        return brainloller.read_png_program(filename)
+        return braincopter.read_png_program(filename)
 
 
 def dispatch(program, memory=None, pointer=0, operation=None, debug=False):
