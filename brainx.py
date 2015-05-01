@@ -27,7 +27,7 @@ def is_file(program):
 
 def read_program_from_file(filename):
     with open(filename) as f:
-        return f.readlines()
+        return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
 
 
 def dispatch(program, memory=None, pointer=0, operation=None):
@@ -49,7 +49,7 @@ def main():
         program = read_program()
 
     elif is_file(args.program):
-        program = read_program_from_file(program)
+        program = read_program_from_file(args.program)
 
     elif is_code(args.program):
         program = args.program
