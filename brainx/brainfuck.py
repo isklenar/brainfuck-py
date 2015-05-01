@@ -25,7 +25,7 @@ def __parse_loops(program):
 def interpret(program, memory=[0], pointer=0):
     i = 0
     loops = __parse_loops(program)
-
+    output = str()
     while i < len(program):
         if program[i] == ">":
             pointer += 1
@@ -43,6 +43,7 @@ def interpret(program, memory=[0], pointer=0):
             memory[pointer] = memory[pointer] - 1 if memory[pointer] - 1 > 0 else 0  # underflow
 
         if program[i] == ".":
+            output += chr(memory[pointer])
             print(chr(memory[pointer]))
 
         if program[i] == ",":
@@ -58,3 +59,5 @@ def interpret(program, memory=[0], pointer=0):
                 i = loops[i] - 1 if loops[i] - 1 > 0 else 0
 
         i += 1
+
+    return output

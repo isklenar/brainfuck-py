@@ -30,31 +30,73 @@ def read_program_from_file(filename):
         return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
 
 
-def dispatch(program, memory=None, pointer=0, operation=None):
+def create_log(program, memory, pointer, output, param):
+    with open("debug\\debug_" + param + ".log", "w+") as f:
+        f.write("# program data\n")
+        f.write(program)
+        f.write("\n\n# memory\n")
+        f.write(str(memory))
+        f.write("\n\n# memory pointer\n")
+        f.write(str(pointer))
+        f.write("\n\n# output\n")
+        f.write(output)
+        f.write("\n")
+
+
+def next_log(num):
+    if num[1] == "9":
+        return chr(ord(num[0]) + 1) + "0"  # inkrementuje se desitkove cislo
+    else:
+        return num[0] + chr(ord(num[1]) + 1)  # desitkove se necha, jednotkove se inkrementuje
+
+
+def log(program, memory, pointer, output):
+    from os import listdir
+    from os.path import isfile, join
+
+    files = [f for f in listdir("debug\\") if isfile(join("debug\\", f))]
+    if len(files) == 0:
+        create_log(program, memory, pointer, output, "00")
+    else:
+        import re
+        last = re.search("\d+", files[len(files) - 1]).group(0)
+        create_log(program, memory, pointer, output, next_log(last))
+
+
+def dispatch(program, memory=None, pointer=0, operation=None, debug=False):
     if not memory:
         memory = [0]
 
     if operation is None:
-        brainfuck.interpret(program, memory, pointer)
+        output = brainfuck.interpret(program, memory, pointer)
+
+    if debug:
+        log(program, memory, pointer, output)
+
+
+def load_program(data):
+    program = str()
+    if data is None:
+        program = read_program()
+
+    elif is_file(data):
+        program = read_program_from_file(data)
+
+    elif is_code(data):
+        program = data
+
+    return program
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
-
+    parser.add_argument("-t", "--test", action="store_true")
     args = parser.parse_args()
-    program = str()
 
-    if args.program is None:
-        program = read_program()
+    program = load_program(args.program)
 
-    elif is_file(args.program):
-        program = read_program_from_file(args.program)
-
-    elif is_code(args.program):
-        program = args.program
-
-    dispatch(program)
+    dispatch(program, debug=args.test)
 
 
 if __name__ == '__main__':
