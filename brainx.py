@@ -88,15 +88,25 @@ def load_program(data):
     return program
 
 
+def parse_memory(memory):
+    if (memory is None):
+        return [0]
+    return list(memory)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
     parser.add_argument("-t", "--test", action="store_true")
+    parser.add_argument("-m", "--memory", nargs="?", default=None)
+    parser.add_argument("-p", "--pointer", nargs="+", default=0)
     args = parser.parse_args()
 
     program = load_program(args.program)
+    memory = parse_memory(args.memory)
+    pointer = int(args.pointer[0])
 
-    dispatch(program, debug=args.test)
+    dispatch(program, memory=memory, pointer=pointer, debug=args.test)
 
 
 if __name__ == '__main__':
