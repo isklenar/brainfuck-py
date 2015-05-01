@@ -3,7 +3,7 @@ import sys
 
 from brainx import brainfuck
 from brainx import brainxlogger
-from pngutils import png_reader
+from brainx import brainloller
 
 
 __author__ = 'ivo'
@@ -34,7 +34,7 @@ def read_program_from_file(filename):
             return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
 
     elif extension == "png":
-        return png_reader.get_image(filename)
+        return brainloller.read_png_program(filename)
 
 
 def dispatch(program, memory=None, pointer=0, operation=None, debug=False):

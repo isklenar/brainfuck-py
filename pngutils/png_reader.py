@@ -63,24 +63,69 @@ def __decompress(chunks):
     return zlib.decompress(data)
 
 
-def rgb_data(tmp):
+def __paeth(a, b, c):
+    p = a + b - c
+    pa = abs(p - a)
+    pb = abs(p - b)
+    pc = abs(p - c)
+
+    if pa <= pb and pa <= pc:
+        pr = a
+    elif pb <= pc:
+        pr = b
+    else:
+        pr = c
+
+    return pr
+
+
+def rgb_data(tmp, f, pa=None, pb=None, pc=None):
     r = int.from_bytes(tmp[:1], byteorder="big")
     g = int.from_bytes(tmp[1:2], byteorder="big")
     b = int.from_bytes(tmp[2:3], byteorder="big")
 
-    return r, g, b
+    if f == 0:
+        return r, g, b
+
+    if f == 1:
+        r += pa[0]
+        g += pa[1]
+        b += pa[2]
+
+    if f == 2:
+        r += pb[0]
+        g += pb[1]
+        b += pb[2]
+
+    if f == 3:
+        r += ((pa[0] + pb[0]) / 2)
+        g += ((pa[1] + pb[1]) / 2)
+        b += ((pa[2] + pb[2]) / 2)
+
+    if f == 4:
+        r += __paeth(pa[0], pb[0], pc[0])
+        g += __paeth(pa[1], pb[1], pc[1])
+        b += __paeth(pa[2], pb[2], pc[2])
+
+    return r & 0xFF, g & 0xFF, b & 0xFF
 
 
 def create_rgb_matrix(image_data, width, height):
-    ret = [[0 for x in range(0, width)] for x in range(0, height)]
+    ret = [0 for x in range(0, height * width)]
 
     for x in range(height):
-        f = image_data[x * height: x * height + 1]
+        f = int.from_bytes(image_data[:1], byteorder="big")
         image_data = image_data[1:]
         for y in range(width):
             tmp = image_data[:3]
             image_data = image_data[3:]
-            ret[x][y] = rgb_data(tmp)
+
+            a = ret[x * width + y - 1] if y > 0 else (0, 0, 0)
+            b = ret[(x - 1) * width + y] if x > 0 else (0, 0, 0)
+            c = ret[(x - 1) * width + y - 1] if x > 0 and y > 0 else (0, 0, 0)
+            rgb = rgb_data(tmp, f, a, b, c)
+
+            ret[x * width + y] = rgb
 
     return ret
 
@@ -92,4 +137,4 @@ def get_image(filename):
     chunks = __read_chunks(data)
     width, height = __check_and_parse_first_chuck(chunks[0])
     image_data = __decompress(chunks)
-    return create_rgb_matrix(image_data, width, height)
+    return create_rgb_matrix(image_data, width, height), width, height

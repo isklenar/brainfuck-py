@@ -1,7 +1,7 @@
 __author__ = 'ivo'
 __name__ = "brainloller"
 
-from PIL import Image
+import pngutils.png_reader
 
 
 def __translate_pixel(r, g, b):
@@ -37,15 +37,14 @@ def __change_direction(x_dir, y_dir, command):
 
 def read_png_program(filename):
     output = str()
-    x_dir, y_dir = 1, 0  # jdeme doprava
-    im = Image.open(filename)
-    rgb = im.convert("RGB")
+    x_dir, y_dir = 1, 0  # jdeme na zacatku doprava
 
-    width, height = rgb.size[0], rgb.size[1]
+    rgb, width, height = pngutils.png_reader.get_image(filename)
+
     x, y, i = 0, 0, 0
 
     while i < width * height:
-        r, g, b = rgb.getpixel((x, y))
+        r, g, b = rgb[y*width + x]
         command = __translate_pixel(r, g, b)
 
         if command == "R_L" or command == "R_R":
