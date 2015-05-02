@@ -2,9 +2,8 @@ import argparse
 import sys
 
 from brainx import brainfuck
-
+from brainx import brain_image
 from brainx import brainxlogger
-from brainx import braincopter
 
 
 __author__ = 'ivo'
@@ -36,12 +35,14 @@ def read_program_from_file(filename):
             return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
 
     elif extension == "png":
-        return braincopter.read_png_program(filename)
+        return brain_image.translate(filename)
 
 
-def dispatch(program, memory=None, pointer=0, operation=None, debug=False):
+def execute(program, memory=None, pointer=0, operation=None, debug=False):
     if not memory:
         memory = [0]
+
+    output = ""
 
     if operation is None:
         output = brainfuck.interpret(program, memory, pointer)
@@ -80,7 +81,7 @@ def main():
     memory = parse_memory(args.memory)
     pointer = args.memory_pointer
 
-    dispatch(program, memory=memory, pointer=pointer, debug=args.test)
+    execute(program, memory=memory, pointer=pointer, debug=args.test)
 
 
 if __name__ == '__main__':

@@ -1,8 +1,6 @@
 __author__ = 'ivo'
 __name__ = "brainloller"
 
-import pngutils.png_reader
-
 
 def __translate_pixel(r, g, b):
     if r == 255 and g == 0 and b == 0:   return ">"
@@ -35,11 +33,9 @@ def __change_direction(x_dir, y_dir, command):
     return x_dir, y_dir
 
 
-def read_png_program(filename):
+def translate(rgb, width, height):
     output = str()
     x_dir, y_dir = 1, 0  # jdeme na zacatku doprava
-
-    rgb, width, height = pngutils.png_reader.get_image(filename)
 
     x, y, i = 0, 0, 0
 

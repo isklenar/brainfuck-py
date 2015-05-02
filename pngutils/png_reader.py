@@ -31,7 +31,6 @@ def __read_chunks(data):
         length = int.from_bytes(data[p] + data[p + 1] + data[p + 2] + data[p + 3], byteorder='big')
         p += 4
         type = int.from_bytes(data[p] + data[p + 1] + data[p + 2] + data[p + 3], byteorder='big')
-
         p += 4
 
         chunkdata = b''
@@ -107,14 +106,13 @@ def rgb_data(tmp, f, pa=None, pb=None, pc=None):
         g += __paeth(pa[1], pb[1], pc[1])
         b += __paeth(pa[2], pb[2], pc[2])
 
-    return r & 0xFF, g & 0xFF, b & 0xFF
+    return r % 256, g % 256, b % 256
 
 
 def create_rgb_matrix(image_data, width, height):
-    ret = [0 for x in range(0, height * width)]
-
+    ret = [(0, 0, 0) for x in range(0, height * width)]
+    colours = {}
     for x in range(height):
-        print(x)
         f = int.from_bytes(image_data[:1], byteorder="big")
         image_data = image_data[1:]
         for y in range(width):
@@ -125,17 +123,25 @@ def create_rgb_matrix(image_data, width, height):
             b = ret[(x - 1) * width + y] if x > 0 else (0, 0, 0)
             c = ret[(x - 1) * width + y - 1] if x > 0 and y > 0 else (0, 0, 0)
             rgb = rgb_data(tmp, f, a, b, c)
+            if colours.get(rgb) is None:
+                colours[rgb] = 1
+            else:
+                colours[rgb] += 1
 
             ret[x * width + y] = rgb
 
-    return ret
+    return ret, len(colours.keys())
 
 
 def get_image(filename):
     data = list(__read_png(filename))
 
     __check_header(data)
+
     chunks = __read_chunks(data)
     width, height = __check_and_parse_first_chuck(chunks[0])
     image_data = __decompress(chunks)
-    return create_rgb_matrix(image_data, width, height), width, height
+
+    rgb, colours = create_rgb_matrix(image_data, width, height)
+
+    return rgb, colours, width, height

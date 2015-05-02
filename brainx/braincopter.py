@@ -3,8 +3,6 @@ from brainloller import __change_direction
 __author__ = 'ivo'
 __name__ = "braincopter"
 
-import pngutils.png_reader
-
 
 def __translate_pixel(r, g, b):
     value = (65536 * r + 256 * g + b) % 11
@@ -22,14 +20,11 @@ def __translate_pixel(r, g, b):
     return ""
 
 
-def read_png_program(filename):
+def translate(rgb, width, height):
     output = str()
     x_dir, y_dir = 1, 0  # jdeme na zacatku doprava
 
-    rgb, width, height = pngutils.png_reader.get_image(filename)
-
     x, y, i = 0, 0, 0
-
     while i < width * height:
         r, g, b = rgb[y * width + x]
         command = __translate_pixel(r, g, b)
