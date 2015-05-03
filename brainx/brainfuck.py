@@ -37,33 +37,33 @@ def interpret(program, memory=None, pointer=0):
             if pointer == len(memory):
                 memory.append(0)
 
-        if program[i] == "<":
+        elif program[i] == "<":
             if pointer > 0:
                 pointer -= 1
 
-        if program[i] == "+":
-            memory[pointer] = (memory[pointer] + 1) % 255  # overflow
+        elif program[i] == "+":
+            memory[pointer] = (memory[pointer] + 1) % 256  # overflow
 
-        if program[i] == "-":
-            memory[pointer] = memory[pointer] - 1 if memory[pointer] - 1 > 0 else 0  # underflow
+        elif program[i] == "-":
+            memory[pointer] = memory[pointer] - 1 if memory[pointer] - 1 >= 0 else 0  # underflow
 
-        if program[i] == ".":
+        elif program[i] == ".":
             output += chr(memory[pointer])
             print(chr(memory[pointer]))
 
-        if program[i] == ",":
+        elif program[i] == ",":
             character = sys.stdin.read(1)
-            memory[pointer] = int(character)
+            memory[pointer] = ord(character)
 
-        if program[i] == "[":
+        elif program[i] == "[":
             if memory[pointer] == 0:
-                i = loops[i] + 1
+                i = loops[i]
 
-        if program[i] == "]":
+        elif program[i] == "]":
             if memory[pointer] != 0:
-                i = loops[i] - 1
+                i = loops[i]
 
-        if program[i] == "#":
+        elif program[i] == "#":
             brainxlogger.log(program, memory, pointer, output)
 
         i += 1

@@ -32,7 +32,7 @@ def read_program_from_file(filename):
     extension = extension[len(extension) - 1]
     if extension == "b":
         with open(filename) as f:
-            return f.readlines()[0]  # jedna se o list, prvni polozka je string s programem
+            return "".join(f.readlines())  # jedna se o list, prvni polozka je string s programem
 
     elif extension == "png":
         return brain_image.translate(filename)
