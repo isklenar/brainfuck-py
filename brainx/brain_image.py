@@ -1,6 +1,5 @@
-import braincopter
+from brainx_convertors import braincopter, brainloller
 import pngutils.png_reader
-import brainloller
 
 __author__ = 'ivo'
 __name__ = "brain_image"
@@ -10,6 +9,6 @@ def translate(filename):
     rgb, colours, width, height = pngutils.png_reader.get_image(filename)
 
     if colours < 12:
-        return brainloller.translate(rgb, width, height)
+        return brainloller.convert_image_to_program(rgb, width, height)
     else:
-        return braincopter.translate(rgb, width, height)
+        return braincopter.convert_image_to_program(rgb, width, height)

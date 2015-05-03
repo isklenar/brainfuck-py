@@ -57,7 +57,7 @@ def __check_and_parse_first_chuck(chunk):
 def __decompress(chunks):
     data = b''
     for i in range(1, len(chunks) - 1):
-        data += chunks[i][2]
+        data += chunks[i][2]  # treti polozka jsou data
 
     return zlib.decompress(data)
 

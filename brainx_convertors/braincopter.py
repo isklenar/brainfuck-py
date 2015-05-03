@@ -1,4 +1,4 @@
-from brainloller import __change_direction
+from brainx_convertors.brainloller import __change_direction
 
 __author__ = 'ivo'
 __name__ = "braincopter"
@@ -20,7 +20,7 @@ def __translate_pixel(r, g, b):
     return ""
 
 
-def translate(rgb, width, height):
+def convert_image_to_program(rgb, width, height):
     output = str()
     x_dir, y_dir = 1, 0  # jdeme na zacatku doprava
 

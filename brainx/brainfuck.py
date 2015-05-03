@@ -49,7 +49,6 @@ def interpret(program, memory=None, pointer=0):
 
         elif program[i] == ".":
             output += chr(memory[pointer])
-            print(chr(memory[pointer]))
 
         elif program[i] == ",":
             character = sys.stdin.read(1)
@@ -68,4 +67,5 @@ def interpret(program, memory=None, pointer=0):
 
         i += 1
 
+    print(output, end="")
     return output

@@ -1,4 +1,5 @@
 import argparse
+import ast
 import sys
 
 from brainx import brainfuck
@@ -54,18 +55,19 @@ def execute(program, memory=None, pointer=0, operation=None, debug=False):
 def load_program(data):
     program = str()
     if data is None:
-        program = read_program()
+        return read_program()
 
-    elif is_file(data):
-        program = read_program_from_file(data)
+    if is_file(data):
+        return read_program_from_file(data)
 
-    elif is_code(data):
-        program = data
+    if is_code(data):
+        return data
 
     return program
 
 
 def parse_memory(memory):
+    memory = ast.literal_eval(memory)
     return [int(x) for x in memory]
 
 
@@ -73,11 +75,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
     parser.add_argument("-t", "--test", action="store_true")
-    parser.add_argument("-m", "--memory", default=b'\0')
+    parser.add_argument("-m", "--memory", default=b"\0")
     parser.add_argument("-p", "--memory-pointer", nargs=1, default=0)
     args = parser.parse_args()
 
     program = load_program(args.program)
+   # brainloller.convert_program_to_image(program)
     memory = parse_memory(args.memory)
     pointer = args.memory_pointer
 

@@ -10,8 +10,8 @@ def __next_log(num):
 
 
 def __create_log(program, memory, pointer, output, param):
-    mem_out = bytearray(memory)
-
+    import array
+    mem_out = array.array("B", memory).tostring()
     with open("debug\\debug_" + param + ".log", "w+") as f:
         f.write("# program data\n")
         f.write(program)
