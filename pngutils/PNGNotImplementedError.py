@@ -1,0 +1,2 @@
+class PNGNotImplementedError(BaseException):
+    pass
