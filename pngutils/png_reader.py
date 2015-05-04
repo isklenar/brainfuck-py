@@ -112,17 +112,20 @@ def rgb_data(tmp, f, pa=None, pb=None, pc=None):
 def create_rgb_matrix(image_data, width, height):
     ret = [(0, 0, 0) for x in range(0, height * width)]
     colours = {}
+    p = 0
     for x in range(height):
-        f = int.from_bytes(image_data[:1], byteorder="big")
-        image_data = image_data[1:]
-        for y in range(width):
-            tmp = image_data[:3]
-            image_data = image_data[3:]
+        f = int.from_bytes(image_data[p: p + 1], byteorder="big")
+        p += 1
 
+        for y in range(width):
+            tmp = image_data[p:p + 3]
+
+            p += 3
             a = ret[x * width + y - 1] if y > 0 else (0, 0, 0)
             b = ret[(x - 1) * width + y] if x > 0 else (0, 0, 0)
             c = ret[(x - 1) * width + y - 1] if x > 0 and y > 0 else (0, 0, 0)
             rgb = rgb_data(tmp, f, a, b, c)
+
             if colours.get(rgb) is None:
                 colours[rgb] = 1
             else:

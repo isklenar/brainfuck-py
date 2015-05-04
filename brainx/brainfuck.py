@@ -28,6 +28,8 @@ def __parse_loops(program):
 def interpret(program, memory=None, pointer=0):
     if not memory:
         memory = [0]
+
+    print("start")
     i = 0
     loops = __parse_loops(program)
     output = str()
@@ -49,6 +51,7 @@ def interpret(program, memory=None, pointer=0):
 
         elif program[i] == ".":
             output += chr(memory[pointer])
+            print(chr(memory[pointer]), end="")
 
         elif program[i] == ",":
             character = sys.stdin.read(1)
@@ -66,6 +69,5 @@ def interpret(program, memory=None, pointer=0):
             brainxlogger.log(program, memory, pointer, output)
 
         i += 1
-
     print(output, end="")
     return output

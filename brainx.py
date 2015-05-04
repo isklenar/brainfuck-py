@@ -75,12 +75,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
     parser.add_argument("-t", "--test", action="store_true")
-    parser.add_argument("-m", "--memory", default=b"\0")
+    parser.add_argument("-m", "--memory", default="b'\\0'")
     parser.add_argument("-p", "--memory-pointer", nargs=1, default=0)
     args = parser.parse_args()
 
     program = load_program(args.program)
-   # brainloller.convert_program_to_image(program)
     memory = parse_memory(args.memory)
     pointer = args.memory_pointer
 
