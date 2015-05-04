@@ -29,7 +29,6 @@ def interpret(program, memory=None, pointer=0):
     if not memory:
         memory = [0]
 
-    print("start")
     i = 0
     loops = __parse_loops(program)
     output = str()
@@ -69,5 +68,4 @@ def interpret(program, memory=None, pointer=0):
             brainxlogger.log(program, memory, pointer, output)
 
         i += 1
-    print(output, end="")
     return output

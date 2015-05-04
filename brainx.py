@@ -5,6 +5,8 @@ import sys
 from brainx import brainfuck
 from brainx import brain_image
 from brainx import brainxlogger
+from brainx_convertors import brainloller
+from pngutils import png_writer
 
 
 __author__ = 'ivo'
@@ -82,7 +84,8 @@ def main():
     program = load_program(args.program)
     memory = parse_memory(args.memory)
     pointer = args.memory_pointer
-
+    rgb, n = brainloller.convert_program_to_image(program)
+    png_writer.write_png("test.png", rgb, n)
     execute(program, memory=memory, pointer=pointer, debug=args.test)
 
 

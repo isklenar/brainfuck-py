@@ -90,18 +90,9 @@ def __find_nearest_larger_square(number):
 def convert_program_to_image(program):
     ret = []
 
-    n = __find_nearest_larger_square(len(program))
+    n = len(program)
     for i in range(0, n):
-        if i != 0:
-            ret.append(__translate_command("R_L"))
-
-        for j in range(0, n):
-            if i * n + j > len(program):
-                ret.append(__translate_command("BLANK"))
-            else:
-                rgb = __translate_command(program[i * n + j])
-                ret.append(rgb)
-
-        ret.append(__translate_command("R_R"))
+        rgb = __translate_command(program[i])
+        ret.append(rgb)
 
     return ret, n
