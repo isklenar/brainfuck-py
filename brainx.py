@@ -36,8 +36,7 @@ def read_program_from_file(filename):
     if extension == "b":
         with open(filename) as f:
             return "".join(f.readlines())  # jedna se o list, prvni polozka je string s programem
-
-    elif extension == "png":
+    else:
         return brain_image.translate(filename)
 
 
@@ -79,6 +78,7 @@ def main():
     parser.add_argument("-t", "--test", action="store_true")
     parser.add_argument("-m", "--memory", default="b'\\0'")
     parser.add_argument("-p", "--memory-pointer", nargs=1, default=0)
+    parser.add_argument("--lc2f")
     args = parser.parse_args()
 
     program = load_program(args.program)

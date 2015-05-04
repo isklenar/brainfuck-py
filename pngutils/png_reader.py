@@ -1,6 +1,7 @@
 import zlib
 
 from pngutils import PNGWrongHeaderError
+from pngutils.PNGNotImplementedError import PNGNotImplementedError
 
 
 __author__ = 'ivo'
@@ -45,11 +46,20 @@ def __read_chunks(data):
     return chunks
 
 
+def __check_setings(data):
+    if data[0] != b'\x08' and data[1] != b'\x02' and data [2] != data [3] != data[4] != b'\x00':
+        raise PNGNotImplementedError
+
+
 def __check_and_parse_first_chuck(chunk):
     data = chunk[2]
 
     width = int.from_bytes(data[0:4], byteorder="big")
     height = int.from_bytes(data[4:8], byteorder="big")
+
+    data = data[9:13]
+
+    __check_setings(data)
 
     return width, height
 
