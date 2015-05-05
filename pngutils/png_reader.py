@@ -88,7 +88,7 @@ def __paeth(a, b, c):
     return pr
 
 
-def rgb_data(tmp, f, pa=None, pb=None, pc=None):
+def __rgb_data(tmp, f, pa=None, pb=None, pc=None):
     r = int.from_bytes(tmp[:1], byteorder="big")
     g = int.from_bytes(tmp[1:2], byteorder="big")
     b = int.from_bytes(tmp[2:3], byteorder="big")
@@ -134,7 +134,7 @@ def create_rgb_matrix(image_data, width, height):
             a = ret[x * width + y - 1] if y > 0 else (0, 0, 0)
             b = ret[(x - 1) * width + y] if x > 0 else (0, 0, 0)
             c = ret[(x - 1) * width + y - 1] if x > 0 and y > 0 else (0, 0, 0)
-            rgb = rgb_data(tmp, f, a, b, c)
+            rgb = __rgb_data(tmp, f, a, b, c)
 
             if colours.get(rgb) is None:
                 colours[rgb] = 1

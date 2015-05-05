@@ -1,4 +1,5 @@
 from brainx_convertors.brainloller import __change_direction
+from pngutils import png_reader
 
 __author__ = 'ivo'
 __name__ = "braincopter"
@@ -51,7 +52,8 @@ def __translate_pixel(rgb):
     return ""
 
 
-def convert_program_to_image(program, rgb):
+def convert_program_to_image(program, filename):
+    rgb = png_reader.get_image(filename)
     if len(program) > len(rgb):
         return  # @TODO dodelat
 

@@ -1,2 +1,3 @@
-class PNGNotImplementedError(BaseException):
-    pass
+class PNGNotImplementedError(Exception):
+    def __init__(self):
+        pass

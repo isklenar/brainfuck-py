@@ -6,6 +6,7 @@ from brainx import brainfuck
 from brainx import brain_image
 from brainx import brainxlogger
 from brainx_convertors import brainloller
+from brainx_convertors import braincopter
 from pngutils import png_writer
 
 
@@ -72,21 +73,61 @@ def parse_memory(memory):
     return [int(x) for x in memory]
 
 
+def determine_operation(args):
+    if args.lc2f is not None:
+        return "ItF"
+
+    if args.f2lc and len(args.i) == 1:
+        return "FtIBL"
+
+    if args.f2lc and len(args.i) == 2:
+        return "FtIBC"
+
+    return "ex"
+
+
+def dispatch(operation, args):
+    if operation == "ItF":
+        program = brain_image.translate(args.lc2f[0])
+        if args.lc2f[1].startswith(">"):
+            print(program)
+        else:
+            with open(args.lc2f[1], "w") as f:
+                f.write(program)
+
+    elif operation == "ex":
+        program = load_program(args.program)
+        memory = parse_memory(args.memory)
+        pointer = args.memory_pointer
+
+        execute(program, memory=memory, pointer=pointer, debug=args.test)
+
+    elif operation == "FtIBL":
+        program = load_program(args.i[0])
+        rgb, width, height = brainloller.convert_program_to_image(program)
+        png_writer.write_png(args.o, rgb, width, height)
+
+    elif operation == "FtIBC":
+        program = load_program(args.i[0])
+        rgb, width, height = braincopter.convert_program_to_image(program, args.i[1])
+        png_writer.write_png(args.o, rgb, width, height)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
     parser.add_argument("-t", "--test", action="store_true")
     parser.add_argument("-m", "--memory", default="b'\\0'")
     parser.add_argument("-p", "--memory-pointer", nargs=1, default=0)
-    parser.add_argument("--lc2f")
-    args = parser.parse_args()
+    parser.add_argument("--lc2f", nargs=2)
+    parser.add_argument("--f2lc", action="store_true")
+    parser.add_argument("-i", nargs="+")
+    parser.add_argument("-o", nargs=1)
 
-    program = load_program(args.program)
-    memory = parse_memory(args.memory)
-    pointer = args.memory_pointer
-    rgb, width, height = brainloller.convert_program_to_image(program)
-    png_writer.write_png("test.png", rgb, width, height)
-    execute(program, memory=memory, pointer=pointer, debug=args.test)
+    args = parser.parse_args()
+    operation = determine_operation(args)
+    dispatch(operation, args)
+    sys.exit(0)
 
 
 if __name__ == '__main__':

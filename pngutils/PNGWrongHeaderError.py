@@ -1,5 +1,6 @@
 __author__ = 'ivo'
 
 
-class PNGWrongHeaderError(BaseException):
-    pass
+class PNGWrongHeaderError(Exception):
+    def __init__(self):
+        pass
