@@ -9,10 +9,10 @@ def __create_header():
     return b'\x89PNG\r\n\x1a\n'
 
 
-def __create_head_chunk(n):
+def __create_head_chunk(width, height):
     length = b'\x00\x00\x00\r'  # 13
     chunk_name = b'IHDR'
-    dim = struct.pack(">I", n) + struct.pack(">I", 1)
+    dim = struct.pack(">I", width) + struct.pack(">I", height)
     options = b'\x08\x02\x00\x00\x00'
 
     data = length + chunk_name + dim + options
@@ -30,12 +30,14 @@ def __create_end_chunk():
     return length + chunk_name + data + crc
 
 
-def __create_data_chunk(rgb, n):
+def __create_data_chunk(rgb, width, height):
     chunk_name = b'IDAT'
     data = b''
-    data += b'\0'  # filt
-    for y in range(n):
-        data += struct.pack(">B", rgb[y][0]) + struct.pack(">B", rgb[y][1]) + struct.pack(">B", rgb[y][2])
+
+    for i in range(height):
+        data += b'\0'  # filt
+        for j in range(width):
+            data += struct.pack(">B", rgb[i][j][0]) + struct.pack(">B", rgb[i][j][1]) + struct.pack(">B", rgb[i][j][2])
 
     data = zlib.compress(data)
 
@@ -47,11 +49,11 @@ def __create_data_chunk(rgb, n):
     return out
 
 
-def write_png(filename, rgb, n):
+def write_png(filename, rgb, width, height):
     header = __create_header()
-    head_chunk = __create_head_chunk(n)
+    head_chunk = __create_head_chunk(width, height)
 
-    data_chunk = __create_data_chunk(rgb, n)
+    data_chunk = __create_data_chunk(rgb, width, height)
 
     end_chunk = __create_end_chunk()
 

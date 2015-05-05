@@ -67,7 +67,7 @@ def convert_image_to_program(rgb, width, height):
     x, y, i = 0, 0, 0
 
     while i < width * height:
-        r, g, b = rgb[y*width + x]
+        r, g, b = rgb[y * width + x]
         command = __translate_pixel(r, g, b)
 
         if command == "R_L" or command == "R_R":
@@ -88,11 +88,29 @@ def __find_nearest_larger_square(number):
 
 
 def convert_program_to_image(program):
-    ret = []
+    n = __find_nearest_larger_square(len(program))
+    ret = [[(0, 0, 0) for x in range(n + 2)] for x in range(n)]
 
-    n = len(program)
-    for i in range(0, n):
-        rgb = __translate_command(program[i])
-        ret.append(rgb)
+    for i in range(0, n, 2):
+        for j in range(n):
+            if i * n + j >= len(program):
+                ret[i][j + 1] = __translate_command("NOP")
+            else:
+                ret[i][j + 1] = __translate_command(program[i * n + j])
 
-    return ret, n
+    for i in range(1, n, 2):
+        for j in range(n):
+            if i * n + j >= len(program):
+                ret[i][n - 1 - j] = __translate_command("NOP")
+            else:
+                ret[i][n - j] = __translate_command(program[i * n + j])
+
+    for i in range(n):
+        if i == 0:
+            ret[i][0] = __translate_command("NOP")
+        else:
+            ret[i][0] = __translate_command("R_L")
+
+        ret[i][n + 1] = __translate_command("R_R")
+
+    return ret, n + 2, n
