@@ -7,7 +7,7 @@ from brainx import brain_image
 from brainx import brainxlogger
 from brainx_convertors import brainloller
 from brainx_convertors import braincopter
-from pngutils import png_writer
+from utils import png_writer
 
 
 __author__ = 'ivo'
@@ -36,9 +36,9 @@ def read_program_from_file(filename):
     extension = extension[len(extension) - 1]
     if extension == "b":
         with open(filename) as f:
-            return "".join(f.readlines())  # jedna se o list, prvni polozka je string s programem
+            return "".join(f.readlines()), False  # jedna se o list, prvni polozka je string s programem
     else:
-        return brain_image.translate(filename)
+        return brain_image.translate(filename), True
 
 
 def execute(program, memory=None, pointer=0, operation=None, debug=False):
@@ -96,7 +96,7 @@ def dispatch(operation, args):
                 f.write(program)
 
     elif operation == "ex":
-        program = load_program(args.program)
+        program, image = load_program(args.program)
         memory = parse_memory(args.memory)
         pointer = args.memory_pointer
 
@@ -123,6 +123,7 @@ def main():
     parser.add_argument("--f2lc", action="store_true")
     parser.add_argument("-i", nargs="+")
     parser.add_argument("-o", nargs=1)
+    parser.add_argument("---pnm", "--pbm", action="store_true")
 
     args = parser.parse_args()
     operation = determine_operation(args)

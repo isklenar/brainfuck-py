@@ -1,7 +1,7 @@
 import zlib
 
-from pngutils import PNGWrongHeaderError
-from pngutils.PNGNotImplementedError import PNGNotImplementedError
+from utils import PNGWrongHeaderError
+from utils.PNGNotImplementedError import PNGNotImplementedError
 
 
 __author__ = 'ivo'

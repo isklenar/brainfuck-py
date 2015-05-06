@@ -1,5 +1,5 @@
 from brainx_convertors.brainloller import __change_direction
-from pngutils import png_reader
+from utils import png_reader
 
 __author__ = 'ivo'
 __name__ = "braincopter"
