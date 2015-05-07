@@ -25,11 +25,20 @@ def __parse_loops(program):
     return ret
 
 
-def interpret(program, memory=None, pointer=0):
+def get_input(program):
+    data = program.split("!")
+    if len(data) > 1:
+        return data[1]
+
+    return None
+
+
+def interpret(program, memory=None, pointer=0, debug=False):
     if not memory:
         memory = [0]
-
     i = 0
+    input = get_input(program)
+    input_pointer = 0
     loops = __parse_loops(program)
     output = str()
     while i < len(program):
@@ -53,8 +62,12 @@ def interpret(program, memory=None, pointer=0):
             print(chr(memory[pointer]), end="")
 
         elif program[i] == ",":
-            character = sys.stdin.read(1)
-            memory[pointer] = ord(character)
+            if input is None:
+                character = sys.stdin.read(1)
+                memory[pointer] = ord(character)
+            else:
+                memory[pointer] = ord(input[input_pointer])
+                input_pointer += 1
 
         elif program[i] == "[":
             if memory[pointer] == 0:
@@ -68,4 +81,8 @@ def interpret(program, memory=None, pointer=0):
             brainxlogger.log(program, memory, pointer, output)
 
         i += 1
+
+    if debug:
+        brainxlogger.log(program, memory, pointer, output)
+
     return output

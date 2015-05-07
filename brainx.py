@@ -4,7 +4,6 @@ import sys
 
 from brainx import brainfuck
 from brainx import brain_image
-from brainx import brainxlogger
 from brainx_convertors import brainloller
 from brainx_convertors import braincopter
 from utils import png_writer
@@ -37,8 +36,10 @@ def read_program_from_file(filename):
     if extension == "b":
         with open(filename) as f:
             return "".join(f.readlines()), False  # jedna se o list, prvni polozka je string s programem
-    else:
+    elif extension == "png":
         return brain_image.translate(filename), True
+
+    return filename, False  # testy escapnout uvozovky, takze param je interpretovan jako jeno souboru
 
 
 def execute(program, memory=None, pointer=0, operation=None, debug=False):
@@ -48,24 +49,23 @@ def execute(program, memory=None, pointer=0, operation=None, debug=False):
     output = ""
 
     if operation is None:
-        output = brainfuck.interpret(program, memory, pointer)
+        output = brainfuck.interpret(program, memory, pointer, debug=debug)
 
-    if debug:
-        brainxlogger.log(program, memory, pointer, output)
+    return output
 
 
 def load_program(data):
     program = str()
     if data is None:
-        return read_program()
+        program = read_program(), False
 
     if is_file(data):
-        return read_program_from_file(data)
+        program = read_program_from_file(data)
 
     if is_code(data):
-        return data
+        program = data, False
 
-    return program
+    return strip_program(program), False
 
 
 def parse_memory(memory):
@@ -86,6 +86,25 @@ def determine_operation(args):
     return "ex"
 
 
+def strip_program(program):
+    allowed_commands = [">", "<", "+", "-", "[", "]", ",", ".", "!", "#"]
+    ret = ""
+    input = False
+    for x in program[0]:  # arg je tuple s programem a barvou
+        if x == "!":
+            input = True
+            ret += x
+        elif input:
+            ret += x
+        elif x in allowed_commands:
+            ret += x
+
+    return ret
+
+
+
+
+
 def dispatch(operation, args):
     if operation == "ItF":
         program = brain_image.translate(args.lc2f[0])
@@ -98,7 +117,7 @@ def dispatch(operation, args):
     elif operation == "ex":
         program, image = load_program(args.program)
         memory = parse_memory(args.memory)
-        pointer = args.memory_pointer
+        pointer = int(args.memory_pointer[0])
 
         execute(program, memory=memory, pointer=pointer, debug=args.test)
 
@@ -113,12 +132,13 @@ def dispatch(operation, args):
         png_writer.write_png(args.o, rgb, width, height)
 
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
     parser.add_argument("-t", "--test", action="store_true")
     parser.add_argument("-m", "--memory", default="b'\\0'")
-    parser.add_argument("-p", "--memory-pointer", nargs=1, default=0)
+    parser.add_argument("-p", "--memory-pointer", nargs=1, default=[0])
     parser.add_argument("--lc2f", nargs=2)
     parser.add_argument("--f2lc", action="store_true")
     parser.add_argument("-i", nargs="+")
