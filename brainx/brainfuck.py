@@ -7,6 +7,11 @@ __name__ = 'brainfuck'
 
 
 def __parse_loops(program):
+    """
+    Zparsuje a namapuje smycky v bfuckovskem programu.
+    :param program: zdrojovy kod v brainfucktu
+    :return: dictiory, klicem je int, hodnotou je int. Hodnota je index odpovidajici smycky z indexu klice
+    """
     ret = {}
     stack = []
 
@@ -26,6 +31,11 @@ def __parse_loops(program):
 
 
 def get_input(program):
+    """
+    Pokud program obsahuje ! pro input, pripravy ho.
+    :param program: bfuck program
+    :return: input ze zdrojaku, None pokud neni.
+    """
     data = program.split("!")
     if len(data) > 1:
         return data[1]
@@ -34,6 +44,16 @@ def get_input(program):
 
 
 def interpret(program, memory=None, pointer=0, debug=False, width=0, rgb=None):  # width a rgb pro logovani
+    """
+    Intepretuje program v brainfucku.
+    :param program: program k interpretace
+    :param memory: pocatecni stav pameti
+    :param pointer: pocatecni ukazatel do pameti
+    :param debug: jestli se ma na konci vytvorit log
+    :param width: sirka obrazku (pro logovani)
+    :param rgb: rgb hodnoty obrazku (pro logovani)
+    :return: vystup programu
+    """
     if not memory:
         memory = [0]
     i = 0

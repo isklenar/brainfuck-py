@@ -7,6 +7,13 @@ __name__ = "brain_image"
 
 
 def translate(filename):
+    """
+    Prelozi obrazek v brainloller/copter variante do brainfucku.
+    Vyhodi exception pokud PNG neni vporadku.
+
+    :param filename: jmeno souboru
+    :return: zdrojak v brainfucku, sirku obrazku a rgb hodnoty
+    """
     rgb, colours, width, height = utils.png_reader.get_image(filename)
 
     if colours < 12:

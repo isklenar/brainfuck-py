@@ -6,6 +6,12 @@ __name__ = "braincopter"
 
 
 def get_closest_colour(rgb, value):
+    """
+    Najde nejblizsi RGB hodnotu vstupnimu parametru.
+    :param rgb:
+    :param value:
+    :return:
+    """
     orig_value = __translate_pixel(rgb)
     diff = value - orig_value
 
@@ -20,8 +26,13 @@ def get_closest_colour(rgb, value):
         return rgb[0], rgb[1], rgb[2] + diff
 
 
-
 def __encode_command(rgb, command):
+    """
+    Zakoduje do pixelu prikaz brainfucku.
+    :param rgb: RGB pixel
+    :param command: brainfuck prikaz
+    :return: zakodovane RGB prikazem
+    """
     if command == ">": return get_closest_colour(rgb, 0)
     if command == "<": return get_closest_colour(rgb, 1)
     if command == "+": return get_closest_colour(rgb, 2)
@@ -37,6 +48,12 @@ def __encode_command(rgb, command):
 
 
 def __translate_pixel(rgb):
+    """
+    Prelozi RGB pixel braincopteru na prikaz brainfucku
+    :param rgb: pixel
+    :return: prikaz
+    """
+
     value = (65536 * rgb[0] + 256 * rgb[1] + rgb[2]) % 11
     if value == 0: return ">"
     if value == 1: return "<"
@@ -53,9 +70,15 @@ def __translate_pixel(rgb):
 
 
 def convert_program_to_image(program, filename):
+    """
+    Prelozi program do obrazku.
+    :param program: program v brainfucku
+    :param filename: cilovy obrazek
+    :return: rgb hodnoty braincopteru
+    """
     rgb = png_reader.get_image(filename)
     if len(program) > len(rgb):
-        return  # @TODO dodelat
+        return
 
     for x in range(len(rgb)):
         if x >= len(program):
@@ -67,13 +90,20 @@ def convert_program_to_image(program, filename):
 
 
 def convert_image_to_program(rgb, width, height):
+    """
+    Prelozi obrazek do programu.
+    :param rgb: rgb hodnoty pixelu
+    :param width: sirka obrazku
+    :param height: vyska obrazku
+    :return: program v brainfucku.
+    """
     output = str()
     x_dir, y_dir = 1, 0  # jdeme na zacatku doprava
 
     x, y, i = 0, 0, 0
     while i < width * height:
-        rgb = rgb[y * width + x]
-        command = __translate_pixel(rgb)
+        pixel = rgb[y * width + x]
+        command = __translate_pixel(pixel)
 
         if command == "R_L" or command == "R_R":
             x_dir, y_dir = __change_direction(x_dir, y_dir, command)

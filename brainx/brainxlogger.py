@@ -3,6 +3,11 @@ __name__ = "brainxlogger"
 
 
 def __next_log(num):
+    """
+    Inkrementuje cislo ve stringu na o jedno vetsi.
+    :param num: aktualni cislo logu
+    :return: nove cislo logu
+    """
     if num[1] == "9":
         return chr(ord(num[0]) + 1) + "0"  # inkrementuje se desitkove cislo
     else:
@@ -10,6 +15,12 @@ def __next_log(num):
 
 
 def __rgb_to_str(rgb, width):
+    """
+    Prevede list RGB pixelu do stringove podoby.
+    :param rgb: list tuple 3 int
+    :param width: sirka obrazku
+    :return: string pro log
+    """
     out = "# RGB input\n[\n"
     if rgb is None:
         return ""
@@ -30,6 +41,16 @@ def __rgb_to_str(rgb, width):
 
 
 def __create_log(program, memory, pointer, output, num, width, rgb):
+    """
+    Vytvori novy log.
+    :param program: kod v brainfucku
+    :param memory: list intu pameti
+    :param pointer: aktualni pointer do pameti
+    :param output: vystup interpreteru
+    :param num: cislo logu
+    :param width: sirka obrazku
+    :param rgb: RGB hodnoty obrazku (None pokud zdroj neni obrazek)
+    """
     import array
 
     mem_out = array.array("B", memory).tostring()
@@ -48,6 +69,15 @@ def __create_log(program, memory, pointer, output, num, width, rgb):
 
 
 def log(program, memory, pointer, output, width, rgb):
+    """
+    Zaloguje parametry do souboru.
+    :param program: kod v brainfucku
+    :param memory: list intu pameti
+    :param pointer: aktualni pointer do pameti
+    :param output: vystup interpreteru
+    :param width: sirka obrazku
+    :param rgb: RGB hodnoty obrazku (None pokud zdroj neni obrazek)
+    """
     from os import listdir
     from os.path import isfile, join
 

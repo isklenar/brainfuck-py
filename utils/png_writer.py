@@ -6,10 +6,20 @@ __name__ = "png_writer"
 
 
 def __create_header():
+    """
+    Vraci hlavicku PNG
+    :return: PNG hlavicka
+    """
     return b'\x89PNG\r\n\x1a\n'
 
 
 def __create_head_chunk(width, height):
+    """
+    Vytvori hlavickovy chunk
+    :param width: sirka obrazku
+    :param height: vyska obrazku
+    :return:  hlavickovy chunk
+    """
     length = b'\x00\x00\x00\r'  # 13
     chunk_name = b'IHDR'
     dim = struct.pack(">I", width) + struct.pack(">I", height)
@@ -22,6 +32,10 @@ def __create_head_chunk(width, height):
 
 
 def __create_end_chunk():
+    """
+    Vytvori IEND chunk
+    :return: IEND chunk
+    """
     length = b'\x00\x00\x00\00'  # 0
     chunk_name = b'IEND'
     data = b''
@@ -31,6 +45,13 @@ def __create_end_chunk():
 
 
 def __create_data_chunk(rgb, width, height):
+    """
+    Vytvori datovy chunk.
+    :param rgb: rgb hodnoty
+    :param width: sirka
+    :param height: vyska
+    :return: raw byty chunku
+    """
     chunk_name = b'IDAT'
     data = b''
 
@@ -50,6 +71,13 @@ def __create_data_chunk(rgb, width, height):
 
 
 def write_png(filename, rgb, width, height):
+    """
+    Zapise PNG.
+    :param filename: jmeno ciloveho souboru
+    :param rgb: list RGB hodnot
+    :param width: sirka
+    :param height: vyska
+    """
     header = __create_header()
     head_chunk = __create_head_chunk(width, height)
 

@@ -14,6 +14,10 @@ __author__ = 'ivo'
 
 
 def read_program():
+    """
+    Precte program z stdin.
+    :return: program
+    """
     ret = str()
     for line in sys.stdin:
         ret = ret + line
@@ -22,15 +26,31 @@ def read_program():
 
 
 def is_code(program):
+    """
+    Kontroluje, jestli program je primo brainfuck.
+    Musi zacinat a koncit uvozovkou.
+    :param program: program ke skontrolovani
+    :return: true/false
+    """
     program = str(program)
     return program.startswith("\"") and program.endswith("\"")
 
 
 def is_file(filename):
+    """
+    Kontroluje jeslti soubor existuje
+    :param filename: jmeno souboru
+    :return: true/false
+    """
     return os.path.isfile(filename)
 
 
 def read_program_from_file(filename):
+    """
+    Precte program ze souboru podle koncovky a typu.
+    :param filename: jmeno souboru
+    :return: kod programu, sirka obrazku, rgb, jestli se jedna o soubor (kvuli logovani)
+    """
     extension = filename.split(".")
     extension = extension[len(extension) - 1]
     if extension == "b":
@@ -42,6 +62,16 @@ def read_program_from_file(filename):
 
 
 def execute(program, memory=None, pointer=0, debug=False, width=0, rgb=None):
+    """
+    Provede brainfuckovsky program.
+    :param program: program k provedeni
+    :param memory: stav pameti
+    :param pointer: ukazatel do pameti
+    :param debug: ma se logovat ano/ne
+    :param width: sirka obrazku (kvuli logu)
+    :param rgb: rgb hodnoty obrazku (kvuli logu)
+    :return:
+    """
     if not memory:
         memory = [0]
 
@@ -51,6 +81,11 @@ def execute(program, memory=None, pointer=0, debug=False, width=0, rgb=None):
 
 
 def load_program(data):
+    """
+    Nacte program z argumentu
+    :param data: hodnota argumentu
+    :return: program, sirka obrazku, rgb hodnoty obrazku, jestli je to obrazek
+    """
     if isinstance(data, list): # z argparse prijde list
         data = data[0]
 
@@ -68,11 +103,21 @@ def load_program(data):
 
 
 def parse_memory(memory):
+    """
+    Prevede string z argumentu do listu reprezentujici pamet.
+    :param memory: uvodni hodnota pameti jako string
+    :return: list intu
+    """
     memory = ast.literal_eval(memory)
     return [int(x) for x in memory]
 
 
 def determine_operation(args):
+    """
+    Podle argumentu zjisti o jakou operaci se jedna.
+    :param args: argumenty
+    :return: typ operace
+    """
     if args.lc2f is not None:
         return "ItF"
 
@@ -86,6 +131,11 @@ def determine_operation(args):
 
 
 def strip_program(program):
+    """
+    Z programu odebere vsechny ne-brainfuckovske znaky.
+    :param program: vstupni program
+    :return: ocisteny program
+    """
     allowed_commands = [">", "<", "+", "-", "[", "]", ",", ".", "!", "#"]
     ret = ""
     input = False
@@ -102,13 +152,18 @@ def strip_program(program):
 
 
 def dispatch(operation, args):
+    """
+    Podle typu operace provede pozadovano akci
+    :param operation: typ operace
+    :param args: argumenty z cmd
+    """
     if operation == "ItF":
         program = brain_image.translate(args.lc2f[0])
         if args.lc2f[1].startswith(">"):
-            print(program)
+            print(program[0])
         else:
             with open(args.lc2f[1], "w") as f:
-                f.write(program)
+                f.write(program[0])
 
     elif operation == "ex":
         program, width, rgb, image = load_program(args.program)
