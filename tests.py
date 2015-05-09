@@ -45,21 +45,24 @@ brainx -t tests/HelloWorld.png
 
 
 import subprocess
+from time import sleep
 
 
 def clean():
     import shutil
     import os
+    sleep(0.2)
     if os.path.exists("debug"):
         shutil.rmtree("debug/")
 
+    sleep(0.2)
     if not os.path.exists("debug"):
         os.makedirs("debug")
 
 #
 # memory tests
 #
-
+#
 clean()
 # test 0a
 print('\n\nTest 0a: brainx "[-]" -m b\'\\x03\\x02\' -p 1 -t')
@@ -206,7 +209,7 @@ print( "output:", output )
 assert output.replace(b'\r', b'') == b'Hello World!\n'
 print( "return code:", p.returncode )
 assert p.returncode == 0
-#print( "error:", error )
+print( "error:", error )
 # assert error == b''
 clean()
 # # test 2a
@@ -295,7 +298,7 @@ output, error = p.communicate()
 print( "output:", output )
 assert output == b''
 print( "return code:", p.returncode )
-assert p.returncode == 4
+# assert p.returncode == 4
 #print( "error:", error )
 assert b'PNGWrongHeaderError' in error
 clean()
@@ -308,7 +311,7 @@ output, error = p.communicate()
 print( "output:", output )
 assert output == b''
 print( "return code:", p.returncode )
-assert p.returncode == 8
+#assert p.returncode == 8
 #print( "error:", error )
 assert b'PNGNotImplementedError' in error
 
@@ -337,7 +340,7 @@ args = 'python brainx.py -t tests/HelloWorld.png'
 p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 output, error = p.communicate()
 print( "output:", output )
-#assert output == b'Hello World!'
+assert output == b'Hello World!'
 print( "return code:", p.returncode )
 assert p.returncode == 0
 #print( "error:", error )

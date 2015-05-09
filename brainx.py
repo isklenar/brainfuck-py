@@ -1,5 +1,6 @@
 import argparse
 import ast
+import os
 import sys
 
 from brainx import brainfuck
@@ -25,9 +26,8 @@ def is_code(program):
     return program.startswith("\"") and program.endswith("\"")
 
 
-def is_file(program):
-    program = str(program)
-    return not (program.startswith("\"") and program.endswith("\""))
+def is_file(filename):
+    return os.path.isfile(filename)
 
 
 def read_program_from_file(filename):
@@ -35,37 +35,36 @@ def read_program_from_file(filename):
     extension = extension[len(extension) - 1]
     if extension == "b":
         with open(filename) as f:
-            return "".join(f.readlines()), False  # jedna se o list, prvni polozka je string s programem
-    elif extension == "png":
-        return brain_image.translate(filename), True
+            return "".join(f.readlines()), 0, None, False
+    else:
+        program, width, rgb = brain_image.translate(filename)
+        return program, width, rgb, True
 
-    return filename, False  # testy escapnout uvozovky, takze param je interpretovan jako jeno souboru
 
-
-def execute(program, memory=None, pointer=0, operation=None, debug=False):
+def execute(program, memory=None, pointer=0, debug=False, width=0, rgb=None):
     if not memory:
         memory = [0]
 
-    output = ""
-
-    if operation is None:
-        output = brainfuck.interpret(program, memory, pointer, debug=debug)
+    output = brainfuck.interpret(program, memory, pointer, debug=debug, width=width, rgb=rgb)
 
     return output
 
 
 def load_program(data):
-    program = str()
+    if isinstance(data, list): # z argparse prijde list
+        data = data[0]
+
+    program = str(data)
+    is_image = False
+    rgb = None
+    width = 0
     if data is None:
-        program = read_program(), False
+        program = read_program()
 
     if is_file(data):
-        program = read_program_from_file(data)
+        program, width, rgb, is_image = read_program_from_file(data)
 
-    if is_code(data):
-        program = data, False
-
-    return strip_program(program), False
+    return strip_program(program), width, rgb, is_image
 
 
 def parse_memory(memory):
@@ -90,7 +89,7 @@ def strip_program(program):
     allowed_commands = [">", "<", "+", "-", "[", "]", ",", ".", "!", "#"]
     ret = ""
     input = False
-    for x in program[0]:  # arg je tuple s programem a barvou
+    for x in program:  # arg je tuple s programem a barvou
         if x == "!":
             input = True
             ret += x
@@ -100,9 +99,6 @@ def strip_program(program):
             ret += x
 
     return ret
-
-
-
 
 
 def dispatch(operation, args):
@@ -115,11 +111,11 @@ def dispatch(operation, args):
                 f.write(program)
 
     elif operation == "ex":
-        program, image = load_program(args.program)
+        program, width, rgb, image = load_program(args.program)
         memory = parse_memory(args.memory)
         pointer = int(args.memory_pointer[0])
 
-        execute(program, memory=memory, pointer=pointer, debug=args.test)
+        execute(program, memory=memory, pointer=pointer, debug=args.test, width=width, rgb=rgb)
 
     elif operation == "FtIBL":
         program = load_program(args.i[0])
@@ -130,7 +126,6 @@ def dispatch(operation, args):
         program = load_program(args.i[0])
         rgb, width, height = braincopter.convert_program_to_image(program, args.i[1])
         png_writer.write_png(args.o, rgb, width, height)
-
 
 
 def main():

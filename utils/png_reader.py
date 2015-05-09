@@ -20,8 +20,7 @@ def __read_png(filename):
 
 def __check_header(data):
     if not (data[0] == b'\x89' and data[1] == b'P' and data[2] == b'N' and data[3] == b'G' and data[4] == b'\r' and
-                    data[5] == b'\n'
-            and data[6] == b'\x1a' and data[7] == b'\n'):
+                    data[5] == b'\n' and data[6] == b'\x1a' and data[7] == b'\n'):
         raise PNGWrongHeaderError
 
 
@@ -46,20 +45,20 @@ def __read_chunks(data):
     return chunks
 
 
-def __check_setings(data):
-    if data[0] != b'\x08' and data[1] != b'\x02' and data [2] != data [3] != data[4] != b'\x00':
+def __check_settings(data):
+    if not (data[0:1] == b'\x08' and data[1:2] == b'\x02' and data[2:3] == b'\x00'and data[3:4] == b'\x00' and data[4:5] == b'\x00'):
         raise PNGNotImplementedError
 
 
-def __check_and_parse_first_chuck(chunk):
+def __check_and_parse_first_chunk(chunk):
     data = chunk[2]
 
     width = int.from_bytes(data[0:4], byteorder="big")
     height = int.from_bytes(data[4:8], byteorder="big")
 
-    data = data[9:13]
+    data = data[8:13]
 
-    __check_setings(data)
+    __check_settings(data)
 
     return width, height
 
@@ -152,7 +151,7 @@ def get_image(filename):
     __check_header(data)
 
     chunks = __read_chunks(data)
-    width, height = __check_and_parse_first_chuck(chunks[0])
+    width, height = __check_and_parse_first_chunk(chunks[0])
     image_data = __decompress(chunks)
 
     rgb, colours = create_rgb_matrix(image_data, width, height)

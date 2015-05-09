@@ -33,7 +33,7 @@ def get_input(program):
     return None
 
 
-def interpret(program, memory=None, pointer=0, debug=False):
+def interpret(program, memory=None, pointer=0, debug=False, width=0, rgb=None):  # width a rgb pro logovani
     if not memory:
         memory = [0]
     i = 0
@@ -78,11 +78,11 @@ def interpret(program, memory=None, pointer=0, debug=False):
                 i = loops[i]
 
         elif program[i] == "#":
-            brainxlogger.log(program, memory, pointer, output)
+            brainxlogger.log(program, memory, pointer, output, width, rgb)
 
         i += 1
 
     if debug:
-        brainxlogger.log(program, memory, pointer, output)
+        brainxlogger.log(program, memory, pointer, output, width, rgb)
 
     return output
