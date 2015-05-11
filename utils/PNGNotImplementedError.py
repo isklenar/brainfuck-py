@@ -1,2 +1,2 @@
-class PNGNotImplementedError(Exception):
+class PNGNotImplementedError(BaseException):
     pass

@@ -1,2 +1,2 @@
-class PNGWrongHeaderError(Exception):
+class PNGWrongHeaderError(BaseException):
     pass

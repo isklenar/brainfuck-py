@@ -173,14 +173,14 @@ def dispatch(operation, args):
         execute(program, memory=memory, pointer=pointer, debug=args.test, width=width, rgb=rgb)
 
     elif operation == "FtIBL":
-        program = load_program(args.i[0])
+        program = load_program(args.i[0])[0]  # je to tuple
         rgb, width, height = brainloller.convert_program_to_image(program)
-        png_writer.write_png(args.o, rgb, width, height)
+        png_writer.write_png(args.o[0], rgb, width, height)
 
     elif operation == "FtIBC":
-        program = load_program(args.i[0])
+        program = load_program(args.i[0])[0]  # je to tuple
         rgb, width, height = braincopter.convert_program_to_image(program, args.i[1])
-        png_writer.write_png(args.o, rgb, width, height)
+        png_writer.write_png(args.o[0], rgb, width, height)
 
 
 def main():
