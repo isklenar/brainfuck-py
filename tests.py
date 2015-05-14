@@ -374,9 +374,37 @@ with open('out.b', mode='r', encoding='ascii') as f:
 
 assert txt_in == ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+."  # hardcoded, z hello2.b
 
+clean()
+print('\n\nTest 6b: brainx --f2lc tests/hello2.b in.png copter.png && brainx --lc2f copter.png out.b')
+print('\tkonverze brainfuck -> braincopter -> brainfuck')
+args = 'python brainx.py --f2lc -i tests/hello2.b in.png -o copter.png'
+p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+output, error = p.communicate()
+print( "output:", output )
+assert output == b''
+print( "return code:", p.returncode )
+assert p.returncode == 0
+#print( "error:", error )
+assert error == b''
+
+args = 'python brainx.py --lc2f copter.png out.b'
+p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+output, error = p.communicate()
+print( "output:", output )
+assert output == b''
+print( "return code:", p.returncode )
+assert p.returncode == 0
+#print( "error:", error )
+assert error == b''
+
+with open('out.b', mode='r', encoding='ascii') as f:
+    txt_in = f.read()
+
+assert txt_in == ">+++++++++[<++++++++>-]<.>+++++++[<++++>-]<+.+++++++..+++.>>>++++++++[<++++>-]<.>>>++++++++++[<+++++++++>-]<---.<<<<.+++.------.--------.>>+."  # hardcoded, z hello2.b
+
 
 clean()
-print('\n\nTest 6b: brainx --f2lc -i hello2.b -o output.png && brainx output.png')
+print('\n\nTest 6c: brainx --f2lc -i hello2.b -o output.png && brainx output.png')
 print('\tkonverze brainfuck-> brainloller, nasledna intepretace ze souboru')
 args = 'python brainx.py --f2lc -i tests/hello2.b -o output.png'
 p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -397,7 +425,7 @@ assert error == b''
 
 
 clean()
-print('\n\nTest 6c: brainx --f2lc -i hello2.b in.png -o output.png && brainx output.png')
+print('\n\nTest 6d: brainx --f2lc -i hello2.b in.png -o output.png && brainx output.png')
 print('\tkonverze brainfuck-> braincopter, nasledna intepretace ze souboru')
 args = 'python brainx.py --f2lc -i tests/hello2.b in.png -o output.png'
 p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
