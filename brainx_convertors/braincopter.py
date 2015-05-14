@@ -74,36 +74,39 @@ def __translate_pixel(rgb):
     return ""
 
 
-def __create_rgb_matrix(rgb, program, width, height):
-    ret = [[(0, 0, 0) for x in range(width)] for x in range(height)]
-    program_pointer = 0
+def __create_row(rgb, program, program_pointer, pixel_pointer, width, x):
+    ret = [(0, 0, 0) for x in range(width)]
+    if x == 0:
+        ret[0] = __encode_command(rgb[x * width], "NOP")
+    else:
+        ret[0] = __encode_command(rgb[x * width], "R_L")
 
-    for x in range(0, height, 2):
-        if x != 0:
-            ret[x][0] = __encode_command(rgb[x * width], "R_L")
+    ret[width - 1] = __encode_command(rgb[x * width + width - 1], "R_R")
+
+    for y in range(1, width - 1):
+        if program_pointer >= len(program):
+            command = "NOP"
         else:
-            ret[x][0] = __encode_command(rgb[0], "NOP")
-        for y in range(0, width):
-            if y == width - 1:
-                ret[x][y] = __encode_command(rgb[x * width + y], "R_R")
-            else:
-                if program_pointer >= len(program):
-                    ret[x][y] = __encode_command(rgb[x * width + y], "NOP")
-                else:
-                    ret[x][y] = __encode_command(rgb[x * width + y], program[program_pointer])
-                    program_pointer += 1
+            command = program[program_pointer]
+            program_pointer += 1
 
-    for x in range(1, height, 2):
-        ret[x][0] = __encode_command(rgb[x * width], "R_L")
-        for y in range(1, width - 1):
-            if y == width - 1:
-                ret[x][width - 1] = __encode_command(rgb[x * width + y], "R_R")
-            else:
-                if program_pointer >= len(program):
-                    ret[x][width - 1 - y] = __encode_command(rgb[x * width + (width - 1 - y)], "NOP")
-                else:
-                    ret[x][width - 1 - y] = __encode_command(rgb[x * width + (width - 1 - y)], program[program_pointer])
-                    program_pointer += 1
+        if x % 2 == 0:
+            coords = y
+        else:
+            coords = width - 1 - y
+
+        ret[coords] = __encode_command(rgb[x * width + coords], command)
+        pixel_pointer += 1
+
+    return ret, pixel_pointer, program_pointer
+
+
+def __create_rgb_matrix(rgb, program, width, height):
+    ret = [[] for x in range(height)]
+    program_pointer = 0
+    pixel_pointer = 0
+    for x in range(0, height):
+        ret[x], pixel_pointer, program_pointer = __create_row(rgb, program, program_pointer, pixel_pointer, width, x)
 
     return ret
 
