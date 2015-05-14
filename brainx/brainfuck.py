@@ -1,8 +1,5 @@
 import sys
 
-import brainxlogger
-
-
 __name__ = 'brainfuck'
 
 

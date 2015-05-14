@@ -17,7 +17,7 @@ def translate(filename):
     rgb, colours, width, height = utils.png_reader.get_image(filename)
 
     if colours < 12:
-        return brainloller.convert_image_to_program(rgb, width, height), width, rgb
+        return brainloller.convert_image_to_program(rgb, width, height), width, height, rgb
     else:
-        return braincopter.convert_image_to_program(rgb, width, height), width, rgb
+        return braincopter.convert_image_to_program(rgb, width, height), width, height, rgb
 

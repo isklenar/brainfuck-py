@@ -8,6 +8,7 @@ from brainx import brain_image
 from brainx_convertors import brainloller
 from brainx_convertors import braincopter
 from utils import png_writer
+from utils import pnmp6_writer
 
 
 __author__ = 'ivo'
@@ -55,10 +56,10 @@ def read_program_from_file(filename):
     extension = extension[len(extension) - 1]
     if extension == "b":
         with open(filename) as f:
-            return "".join(f.readlines()), 0, None, False
+            return "".join(f.readlines()), 0,0, None, False
     else:
-        program, width, rgb = brain_image.translate(filename)
-        return program, width, rgb, True
+        program, width, height, rgb = brain_image.translate(filename)
+        return program, width, height, rgb, True
 
 
 def execute(program, memory=None, pointer=0, debug=False, width=0, rgb=None):
@@ -93,13 +94,14 @@ def load_program(data):
     is_image = False
     rgb = None
     width = 0
+    height = 0
     if data is None:
         program = read_program()
 
     if is_file(data):
-        program, width, rgb, is_image = read_program_from_file(data)
+        program, width, height, rgb, is_image = read_program_from_file(data)
 
-    return strip_program(program), width, rgb, is_image
+    return strip_program(program), width, height, rgb, is_image
 
 
 def parse_memory(memory):
@@ -166,9 +168,12 @@ def dispatch(operation, args):
                 f.write(program[0])
 
     elif operation == "ex":
-        program, width, rgb, image = load_program(args.program)
+        program, width, height, rgb, image = load_program(args.program)
         memory = parse_memory(args.memory)
         pointer = int(args.memory_pointer[0])
+
+        if args.pnm and len(rgb) != 0:
+            pnmp6_writer.write_pnm("pnm.pnm", rgb, width, height)
 
         execute(program, memory=memory, pointer=pointer, debug=args.test, width=width, rgb=rgb)
 
@@ -183,6 +188,7 @@ def dispatch(operation, args):
         png_writer.write_png(args.o[0], rgb, width, height)
 
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("program", nargs="?", default=None)
@@ -193,7 +199,7 @@ def main():
     parser.add_argument("--f2lc", action="store_true")
     parser.add_argument("-i", nargs="+")
     parser.add_argument("-o", nargs=1)
-    parser.add_argument("---pnm", "--pbm", action="store_true")
+    parser.add_argument("--pnm", "--pbm", action="store_true")
 
     args = parser.parse_args()
     operation = determine_operation(args)
