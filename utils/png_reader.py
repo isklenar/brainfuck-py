@@ -45,7 +45,7 @@ def __read_chunks(data):
     while p < len(data):
         length = int.from_bytes(data[p] + data[p + 1] + data[p + 2] + data[p + 3], byteorder='big')
         p += 4
-        type = int.from_bytes(data[p] + data[p + 1] + data[p + 2] + data[p + 3], byteorder='big')
+        type = data[p] + data[p + 1] + data[p + 2] + data[p + 3]
         p += 4
 
         chunkdata = b''
@@ -96,7 +96,8 @@ def __decompress(chunks):
     """
     data = b''
     for i in range(1, len(chunks) - 1):
-        data += chunks[i][2]  # treti polozka jsou data
+        if chunks[i][1] == b'IDAT':
+            data += chunks[i][2]  # treti polozka jsou data
 
     return zlib.decompress(data)
 

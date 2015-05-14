@@ -5,25 +5,30 @@ __author__ = 'ivo'
 __name__ = "braincopter"
 
 
-def get_closest_colour(rgb, value):
+def __get_closest_colour(rgb, value):
     """
     Najde nejblizsi RGB hodnotu vstupnimu parametru.
     :param rgb:
     :param value:
     :return:
     """
-    orig_value = __translate_pixel(rgb)
-    diff = value - orig_value
+    orig_value = (65536 * rgb[0] + 256 * rgb[1] + rgb[2]) % 11
+    diff = abs(value - orig_value)
 
     if diff == 0:
         return rgb
 
-    diff = abs(diff)
+    if 255 >= rgb[2] + 10 >= 0:  # padne do intervalu
+        for x in range(11):
+            new_val = (65536 * rgb[0] + 256 * rgb[1] + (rgb[2] + x)) % 11
+            if new_val == value:
+                return rgb[0], rgb[1], rgb[2] + x
 
-    if rgb[2] + diff > 255:
-        return rgb[0], rgb[1], rgb[2] - diff
-    else:
-        return rgb[0], rgb[1], rgb[2] + diff
+    elif rgb[2] + 10 > 255:  # misto preteceni odecist
+        for x in range(11):
+            new_val = (65536 * rgb[0] + 256 * rgb[1] + (rgb[2] - x)) % 11
+            if new_val == value:
+                return rgb[0], rgb[1], rgb[2] - x
 
 
 def __encode_command(rgb, command):
@@ -33,18 +38,18 @@ def __encode_command(rgb, command):
     :param command: brainfuck prikaz
     :return: zakodovane RGB prikazem
     """
-    if command == ">": return get_closest_colour(rgb, 0)
-    if command == "<": return get_closest_colour(rgb, 1)
-    if command == "+": return get_closest_colour(rgb, 2)
-    if command == "-": return get_closest_colour(rgb, 3)
-    if command == ".": return get_closest_colour(rgb, 4)
-    if command == ",": return get_closest_colour(rgb, 5)
-    if command == "[": return get_closest_colour(rgb, 6)
-    if command == "]": return get_closest_colour(rgb, 7)
-    if command == "R_R": return get_closest_colour(rgb, 8)
-    if command == "R_L": return get_closest_colour(rgb, 9)
+    if command == ">": return __get_closest_colour(rgb, 0)
+    if command == "<": return __get_closest_colour(rgb, 1)
+    if command == "+": return __get_closest_colour(rgb, 2)
+    if command == "-": return __get_closest_colour(rgb, 3)
+    if command == ".": return __get_closest_colour(rgb, 4)
+    if command == ",": return __get_closest_colour(rgb, 5)
+    if command == "[": return __get_closest_colour(rgb, 6)
+    if command == "]": return __get_closest_colour(rgb, 7)
+    if command == "R_R": return __get_closest_colour(rgb, 8)
+    if command == "R_L": return __get_closest_colour(rgb, 9)
 
-    return get_closest_colour(rgb, 10)
+    return __get_closest_colour(rgb, 10)
 
 
 def __translate_pixel(rgb):
@@ -69,24 +74,54 @@ def __translate_pixel(rgb):
     return ""
 
 
-def convert_program_to_image(program, filename):
+def __create_rgb_matrix(rgb, program, width, height):
+    ret = [[(0, 0, 0) for x in range(width)] for x in range(height)]
+    program_pointer = 0
+
+    for x in range(0, height, 2):
+        if x != 0:
+            ret[x][0] = __encode_command(rgb[x * width], "R_L")
+        else:
+            ret[x][0] = __encode_command(rgb[0], "NOP")
+        for y in range(0, width):
+            if y == width - 1:
+                ret[x][y] = __encode_command(rgb[x * width + y], "R_R")
+            else:
+                if program_pointer >= len(program):
+                    ret[x][y] = __encode_command(rgb[x * width + y], "NOP")
+                else:
+                    ret[x][y] = __encode_command(rgb[x * width + y], program[program_pointer])
+                    program_pointer += 1
+
+    for x in range(1, height, 2):
+        ret[x][0] = __encode_command(rgb[x * width], "R_L")
+        for y in range(1, width - 1):
+            if y == width - 1:
+                ret[x][width - 1] = __encode_command(rgb[x * width + y], "R_R")
+            else:
+                if program_pointer >= len(program):
+                    ret[x][width - 1 - y] = __encode_command(rgb[x * width + (width - 1 - y)], "NOP")
+                else:
+                    ret[x][width - 1 - y] = __encode_command(rgb[x * width + (width - 1 - y)], program[program_pointer])
+                    program_pointer += 1
+
+    return ret
+
+
+def convert_program_to_image(program, filename, out):
     """
     Prelozi program do obrazku.
     :param program: program v brainfucku
     :param filename: cilovy obrazek
-    :return: rgb hodnoty braincopteru
+    :param out: jmeno ciloveho souboru
     """
-    rgb = png_reader.get_image(filename)
+    rgb, colours, width, height = png_reader.get_image(filename)
     if len(program) > len(rgb):
         return
 
-    for x in range(len(rgb)):
-        if x >= len(program):
-            break
+    out_rgb = __create_rgb_matrix(rgb, program, width, height)
 
-        rgb[x] = __encode_command(rgb, program[x])
-
-    return rgb
+    return out_rgb, width, height
 
 
 def convert_image_to_program(rgb, width, height):

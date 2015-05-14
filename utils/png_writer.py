@@ -54,9 +54,8 @@ def __create_data_chunk(rgb, width, height):
     """
     chunk_name = b'IDAT'
     data = b''
-
     for i in range(height):
-        data += b'\0'  # filt
+        data += b'\0'  # filtr
         for j in range(width):
             data += struct.pack(">B", rgb[i][j][0]) + struct.pack(">B", rgb[i][j][1]) + struct.pack(">B", rgb[i][j][2])
 

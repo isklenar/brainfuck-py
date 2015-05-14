@@ -179,7 +179,7 @@ def dispatch(operation, args):
 
     elif operation == "FtIBC":
         program = load_program(args.i[0])[0]  # je to tuple
-        rgb, width, height = braincopter.convert_program_to_image(program, args.i[1])
+        rgb, width, height = braincopter.convert_program_to_image(program, args.i[1], args.o[0])
         png_writer.write_png(args.o[0], rgb, width, height)
 
 
